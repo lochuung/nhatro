@@ -1,0 +1,6 @@
+[submodule "boardinghouse-api"]
+	path = boardinghouse-api
+	url = https://github.com/lochuung/nhatro-api.git
+[submodule "boarding-house-ui"]
+	path = boarding-house-ui
+	url = https://github.com/lochuung/nhatro-ui.git
