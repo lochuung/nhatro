@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+
+  db:
+    image: mariadb:10.5
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - '3306:3306'
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - app-network
+
+  api:
+    build:
+      context: ./boardinghouse-api
+      dockerfile: Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: prd
+      SPRING_DATASOURCE_URL: jdbc:mariadb://db:3306/${MYSQL_DATABASE}
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "2105:2105"
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  ui:
+    build:
+      context: ./boarding-house-ui
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${API_SERVER_URL}
+        VITE_IMAGE_URL: ${IMAGE_SERVER_URL}
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+    networks:
+      - app-network
+
+volumes:
+  db_data:
+
+networks:
+  app-network:
